@@ -6,6 +6,24 @@ use Illuminate\Http\Request;
 
 class ImageLinkController extends Controller
 {
+    public function downloadFile(Request $request)
+    {
+        $fileUrl = $request->input('file_url');
+
+        $fileName = basename($fileUrl);
+
+        $savePath = storage_path('app/public/' . $fileName);
+
+        $fileContent = file_get_contents($fileUrl);
+        if ($fileContent === false) {
+            return response()->json(['message' => 'Failed to download file'], 500);
+        }
+
+        file_put_contents($savePath, $fileContent);
+
+        return response()->json(['message' => 'File downloaded successfully', 'file_path' => $savePath]);
+    }
+
     public function extractImageLinks(Request $request)
     {
         $htmlContent = $request->input('html');
